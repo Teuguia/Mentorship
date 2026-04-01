@@ -1,0 +1,16 @@
+.git
+.cursor
+node_modules
+vendor
+storage/logs
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/framework/testing/*
+bootstrap/cache/*.php
+.env
+.env.*
+docker-compose.yml
+public/build
+tests
+README.md
