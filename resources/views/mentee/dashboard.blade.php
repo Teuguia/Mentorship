@@ -15,7 +15,7 @@
                     <a href="{{ route('mentee.dashboard') }}" class="text-white">Tableau de bord</a>
                     <a href="{{ route('sessions.index') }}" class="transition hover:text-white">Sessions</a>
                     <a href="{{ route('messages.index') }}" class="transition hover:text-white">Messages</a>
-                    <a href="{{ route('mentors.index') }}" class="transition hover:text-white">Mentors</a>
+                    <a href="{{ route('web.mentors.index') }}" class="transition hover:text-white">Mentors</a>
                 </nav>
 
                 <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 transition hover:bg-white/10">
@@ -55,7 +55,7 @@
                         <span>Mentors actifs</span>
                     </div>
                     <p class="mt-4 text-4xl font-bold">{{ $stats['active_mentors'] }}</p>
-                    <a href="{{ route('mentors.index') }}" class="mt-4 inline-flex text-xs font-medium text-emerald-50 hover:text-white">
+                    <a href="{{ route('web.mentors.index') }}" class="mt-4 inline-flex text-xs font-medium text-emerald-50 hover:text-white">
                         Explorer les mentors &rarr;
                     </a>
                 </div>
@@ -221,7 +221,7 @@
                     <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                         <h2 class="text-lg font-semibold text-slate-900">Actions rapides</h2>
                         <div class="mt-5 space-y-3">
-                            <a href="{{ route('mentors.index') }}" class="flex w-full items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
+                            <a href="{{ route('web.mentors.index') }}" class="flex w-full items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
                                 Trouver un mentor
                             </a>
                             <a href="{{ route('messages.index') }}" class="flex w-full items-center justify-center rounded-xl border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">

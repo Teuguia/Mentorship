@@ -15,7 +15,7 @@
                     </a>
                 </div>
 
-                <form action="{{ route('mentors.index') }}" method="GET" class="mt-6 grid gap-4 md:grid-cols-6">
+                <form action="{{ route('web.mentors.index') }}" method="GET" class="mt-6 grid gap-4 md:grid-cols-6">
                     <select name="domain_id" class="rounded-lg border-slate-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
                         <option value="">Domaine</option>
                         @foreach($domains as $domain)
@@ -112,7 +112,7 @@
                         <span class="text-xs font-semibold text-slate-500">
                             {{ $mentor->availability ?: 'Disponibilités à définir' }}
                         </span>
-                        <a href="{{ route('mentors.show', $mentor) }}"
+                        <a href="{{ route('web.mentors.show', $mentor) }}"
                            class="text-sm font-semibold text-blue-600 hover:text-blue-700">
                             Voir le profil
                         </a>

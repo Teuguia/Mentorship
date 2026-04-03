@@ -16,7 +16,7 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-3">
-                        <a href="{{ route('mentors.index') }}"
+                        <a href="{{ route('web.mentors.index') }}"
                            class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                             Retour aux mentors
                         </a>

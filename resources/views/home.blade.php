@@ -10,7 +10,7 @@
 
             <nav class="hidden items-center gap-8 md:flex">
                 <a href="{{ route('home') }}" class="text-sm font-semibold text-slate-700 hover:text-blue-600">Accueil</a>
-                <a href="{{ route('mentors.index') }}" class="text-sm font-semibold text-slate-700 hover:text-blue-600">Mentors</a>
+                <a href="{{ route('web.mentors.index') }}" class="text-sm font-semibold text-slate-700 hover:text-blue-600">Mentors</a>
                 <a href="{{ auth()->check() ? route('sessions.index') : route('login') }}" class="text-sm font-semibold text-slate-700 hover:text-blue-600">Sessions</a>
             </nav>
 
@@ -42,7 +42,7 @@
                 </p>
 
                 <div class="mt-8 flex flex-wrap gap-4">
-                    <a href="{{ route('mentors.index') }}" class="rounded-lg bg-yellow-400 px-6 py-3 text-sm font-bold text-slate-900 hover:bg-yellow-300">
+                    <a href="{{ route('web.mentors.index') }}" class="rounded-lg bg-yellow-400 px-6 py-3 text-sm font-bold text-slate-900 hover:bg-yellow-300">
                         Trouver un mentor
                     </a>
                     <a href="{{ route('become.mentor') }}" class="rounded-lg border border-white bg-white/10 px-6 py-3 text-sm font-bold text-white hover:bg-white/20">
@@ -65,7 +65,7 @@
         <div class="rounded-2xl bg-white p-6 shadow-sm">
             <h2 class="text-3xl font-bold text-slate-900">Rechercher un mentor par expertise</h2>
 
-            <form action="{{ route('mentors.index') }}" method="GET" class="mt-6 grid gap-4 md:grid-cols-6">
+            <form action="{{ route('web.mentors.index') }}" method="GET" class="mt-6 grid gap-4 md:grid-cols-6">
                 <select name="domain_id" class="rounded-lg border-slate-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
                     <option value="">Domaine</option>
                     @foreach($domains as $domain)
@@ -129,7 +129,7 @@
 
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             @forelse($domains as $domain)
-                <a href="{{ route('mentors.index', ['domain_id' => $domain->id]) }}" class="rounded-2xl bg-white p-6 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+                <a href="{{ route('web.mentors.index', ['domain_id' => $domain->id]) }}" class="rounded-2xl bg-white p-6 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-md">
                     @php
                         $key = strtolower($domain->name);
                         $icon = $domainIconMap['default'];
@@ -156,7 +156,7 @@
     <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between">
             <h2 class="text-3xl font-bold text-slate-900">Témoignages</h2>
-            <a href="{{ route('mentors.index') }}" class="text-sm font-semibold text-blue-600 hover:text-blue-700">Tout voir</a>
+            <a href="{{ route('web.mentors.index') }}" class="text-sm font-semibold text-blue-600 hover:text-blue-700">Tout voir</a>
         </div>
 
         <div class="mt-6 grid gap-6 md:grid-cols-2">

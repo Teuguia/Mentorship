@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('/mentors', [WebMentorController::class, 'index'])->name('mentors.index');
-Route::get('/mentors/{mentor}', [WebMentorController::class, 'show'])->name('mentors.show');
+Route::get('/mentors', [WebMentorController::class, 'index'])->name('web.mentors.index');
+Route::get('/mentors/{mentor}', [WebMentorController::class, 'show'])->name('web.mentors.show');
 
 Route::get('/become-a-mentor', function () {
     return redirect()->route('register', ['role' => 'mentor']);
