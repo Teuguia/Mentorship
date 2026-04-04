@@ -63,6 +63,7 @@
                         data-messages-root
                         data-conversation-id="{{ $activeConversation->id }}"
                         data-current-user-id="{{ auth()->id() }}"
+                        data-feed-url="{{ route('messages.feed', $activeConversation) }}"
                     @endif
                 >
                     @if($activeConversation)
@@ -99,7 +100,7 @@
                         <div class="max-h-[540px] space-y-4 overflow-y-auto bg-slate-50 px-6 py-6" data-messages-list>
                             @forelse($activeConversation->messages as $message)
                                 @php($mine = $message->sender_id === auth()->id())
-                                <div class="flex {{ $mine ? 'justify-end' : 'justify-start' }}">
+                                <div class="flex {{ $mine ? 'justify-end' : 'justify-start' }}" data-message-id="{{ $message->id }}">
                                     <div class="max-w-xl rounded-2xl px-4 py-3 shadow-sm {{ $mine ? 'bg-slate-900 text-white' : 'bg-white text-slate-800' }}">
                                         <p class="text-sm leading-6">{{ $message->body }}</p>
                                         <p class="mt-2 text-[11px] {{ $mine ? 'text-slate-300' : 'text-slate-400' }}">

@@ -6,7 +6,7 @@
                     <div>
                         <h1 class="text-3xl font-bold text-slate-900">Trouver un mentor</h1>
                         <p class="mt-2 text-slate-500">
-                            Filtrez par domaine, lieu, expérience ou tarif.
+                            Filtrez par domaine, lieu, experience ou tarif.
                         </p>
                     </div>
                     <a href="{{ route('become.mentor') }}"
@@ -27,17 +27,18 @@
 
                     <select name="location" class="rounded-lg border-slate-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
                         <option value="">Lieu</option>
-                        <option value="Online" @selected(request('location') === 'Online')>En ligne</option>
-                        <option value="Yaoundé" @selected(request('location') === 'Yaoundé')>Yaoundé</option>
-                        <option value="Douala" @selected(request('location') === 'Douala')>Douala</option>
-                        <option value="Remote" @selected(request('location') === 'Remote')>À distance</option>
+                        @foreach($locations as $location)
+                            <option value="{{ $location }}" @selected(request('location') === $location)>
+                                {{ $location }}
+                            </option>
+                        @endforeach
                     </select>
 
                     <input
                         type="text"
                         name="q"
                         value="{{ request('q') }}"
-                        placeholder="Spécialité ou nom du mentor"
+                        placeholder="Specialite ou nom du mentor"
                         class="rounded-lg border-slate-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500"
                     >
 
@@ -47,7 +48,7 @@
                         value="{{ request('experience_min') }}"
                         min="0"
                         step="1"
-                        placeholder="Expérience min (années)"
+                        placeholder="Experience min (annees)"
                         class="rounded-lg border-slate-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500"
                     >
 
@@ -97,7 +98,7 @@
                     </div>
 
                     <p class="mt-4 text-sm text-slate-600">
-                        {{ $mentor->bio ?: 'Mentor expérimenté, prêt à vous accompagner.' }}
+                        {{ $mentor->bio ?: 'Mentor experimente, pret a vous accompagner.' }}
                     </p>
 
                     <div class="mt-4 flex flex-wrap gap-2">
@@ -110,7 +111,7 @@
 
                     <div class="mt-5 flex items-center justify-between">
                         <span class="text-xs font-semibold text-slate-500">
-                            {{ $mentor->availability ?: 'Disponibilités à définir' }}
+                            {{ $mentor->availability ?: 'Disponibilites a definir' }}
                         </span>
                         <a href="{{ route('web.mentors.show', $mentor) }}"
                            class="text-sm font-semibold text-blue-600 hover:text-blue-700">

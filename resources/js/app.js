@@ -1,5 +1,6 @@
 import './bootstrap';
 import './message-realtime';
+import './call-room';
 
 import Alpine from 'alpinejs';
 

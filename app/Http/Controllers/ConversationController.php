@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Conversation;
 use App\Models\Mentee;
 use App\Models\Mentor;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -47,6 +48,39 @@ class ConversationController extends Controller
         ]);
     }
 
+    public function feed(Request $request, Conversation $conversation): JsonResponse
+    {
+        $user = Auth::user();
+        $this->authorizeConversation($conversation, $user);
+
+        $afterId = max(0, (int) $request->integer('after'));
+
+        $messages = $conversation->messages()
+            ->with('sender')
+            ->when($afterId > 0, fn ($query) => $query->where('id', '>', $afterId))
+            ->orderBy('id')
+            ->get();
+
+        if ($messages->isNotEmpty()) {
+            $conversation->messages()
+                ->whereIn('id', $messages->pluck('id'))
+                ->where('sender_id', '!=', $user->id)
+                ->whereNull('read_at')
+                ->update(['read_at' => now()]);
+        }
+
+        return response()->json([
+            'messages' => $messages->map(fn ($message) => [
+                'id' => $message->id,
+                'conversation_id' => $message->conversation_id,
+                'sender_id' => $message->sender_id,
+                'sender_name' => $message->sender?->name ?? 'Utilisateur',
+                'body' => $message->body,
+                'created_at' => $message->created_at?->format('d/m/Y H:i'),
+            ])->all(),
+        ]);
+    }
+
     public function startWithMentor(Request $request, Mentor $mentor): RedirectResponse
     {
         abort_unless(Auth::user()->role === 'mentee', 403);
@@ -83,23 +117,35 @@ class ConversationController extends Controller
         return $this->redirectAfterStart($request, $conversation);
     }
 
-    public function call(Conversation $conversation, string $mode = 'video'): RedirectResponse
+    public function call(Conversation $conversation, string $mode = 'video'): View
     {
-        $this->authorizeConversation($conversation, Auth::user());
+        $user = Auth::user();
+        $this->authorizeConversation($conversation, $user);
 
         if (! in_array($mode, ['audio', 'video'], true)) {
             $mode = 'video';
         }
 
-        $room = ($conversation->call_room ?: $this->generateRoomName($conversation->mentor_id, $conversation->mentee_id)).'-'.$mode;
+        $conversation->load([
+            'mentor.user',
+            'mentee.user',
+            'session',
+        ]);
 
         $conversation->forceFill([
             'call_room' => $conversation->call_room ?: $this->generateRoomName($conversation->mentor_id, $conversation->mentee_id),
         ])->save();
 
-        $baseUrl = rtrim(config('services.jitsi.base_url', 'https://meet.jit.si'), '/');
+        $peer = $user->role === 'mentor'
+            ? $conversation->mentee?->user
+            : $conversation->mentor?->user;
 
-        return redirect()->away($baseUrl.'/'.$room);
+        return view('messages.call', [
+            'conversation' => $conversation,
+            'peer' => $peer,
+            'mode' => $mode,
+            'room' => $conversation->call_room.'-'.$mode,
+        ]);
     }
 
     protected function conversationsForUser($user)

@@ -11,6 +11,12 @@ class HomeController extends Controller
     public function index()
     {
         $domains = Domain::orderBy('name')->get();
+        $locations = Mentor::query()
+            ->whereNotNull('availability')
+            ->where('availability', '!=', '')
+            ->distinct()
+            ->orderBy('availability')
+            ->pluck('availability');
 
         $testimonials = Review::query()
             ->with(['mentor.user'])
@@ -24,6 +30,6 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
-        return view('home', compact('domains', 'testimonials', 'featuredMentors'));
+        return view('home', compact('domains', 'locations', 'testimonials', 'featuredMentors'));
     }
 }

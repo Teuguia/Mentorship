@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/sessions', [WebSessionController::class, 'index'])->name('sessions.index');
     Route::get('/messages', [ConversationController::class, 'index'])->name('messages.index');
     Route::get('/messages/{conversation}', [ConversationController::class, 'show'])->name('messages.show');
+    Route::get('/messages/{conversation}/feed', [ConversationController::class, 'feed'])->name('messages.feed');
     Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
     Route::post('/messages/start/mentor/{mentor}', [ConversationController::class, 'startWithMentor'])->name('messages.start.mentor');
     Route::post('/messages/start/mentee/{mentee}', [ConversationController::class, 'startWithMentee'])->name('messages.start.mentee');

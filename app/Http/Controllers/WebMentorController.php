@@ -10,33 +10,57 @@ class WebMentorController extends Controller
 {
     public function index(Request $request)
     {
+        $filters = $request->validate([
+            'domain_id' => ['nullable', 'integer', 'exists:domains,id'],
+            'location' => ['nullable', 'string', 'max:255'],
+            'q' => ['nullable', 'string', 'max:255'],
+            'experience_min' => ['nullable', 'integer', 'min:0'],
+            'rate_min' => ['nullable', 'numeric', 'min:0'],
+            'rate_max' => ['nullable', 'numeric', 'min:0'],
+        ]);
+
         $domains = Domain::orderBy('name')->get();
+        $locations = Mentor::query()
+            ->whereNotNull('availability')
+            ->where('availability', '!=', '')
+            ->distinct()
+            ->orderBy('availability')
+            ->pluck('availability');
+
+        $locationAliases = $this->normalizeLocationAliases($filters['location'] ?? null);
 
         $mentors = Mentor::query()
             ->with(['user', 'domains'])
-            ->when($request->filled('domain_id'), function ($query) use ($request) {
-                $query->whereHas('domains', function ($q) use ($request) {
-                    $q->where('domains.id', $request->domain_id);
+            ->when(! empty($filters['domain_id']), function ($query) use ($filters) {
+                $query->whereHas('domains', function ($domainQuery) use ($filters) {
+                    $domainQuery->where('domains.id', $filters['domain_id']);
                 });
             })
-            ->when($request->filled('location'), function ($query) use ($request) {
-                $query->where('availability', 'like', '%'.$request->location.'%');
+            ->when(! empty($locationAliases), function ($query) use ($locationAliases) {
+                $query->where(function ($locationQuery) use ($locationAliases) {
+                    foreach ($locationAliases as $location) {
+                        $locationQuery->orWhere('availability', 'like', '%'.$location.'%');
+                    }
+                });
             })
-            ->when($request->filled('experience_min'), function ($query) use ($request) {
-                $query->where('years_experience', '>=', (int) $request->experience_min);
+            ->when(isset($filters['experience_min']) && $filters['experience_min'] !== null, function ($query) use ($filters) {
+                $query->where('years_experience', '>=', (int) $filters['experience_min']);
             })
-            ->when($request->filled('rate_min'), function ($query) use ($request) {
-                $query->where('hourly_rate', '>=', (float) $request->rate_min);
+            ->when(isset($filters['rate_min']) && $filters['rate_min'] !== null, function ($query) use ($filters) {
+                $query->where('hourly_rate', '>=', (float) $filters['rate_min']);
             })
-            ->when($request->filled('rate_max'), function ($query) use ($request) {
-                $query->where('hourly_rate', '<=', (float) $request->rate_max);
+            ->when(isset($filters['rate_max']) && $filters['rate_max'] !== null, function ($query) use ($filters) {
+                $query->where('hourly_rate', '<=', (float) $filters['rate_max']);
             })
-            ->when($request->filled('q'), function ($query) use ($request) {
-                $search = $request->q;
+            ->when(! empty($filters['q']), function ($query) use ($filters) {
+                $search = trim($filters['q']);
 
-                $query->where(function ($q) use ($search) {
-                    $q->where('expertise_title', 'like', '%'.$search.'%')
+                $query->where(function ($searchQuery) use ($search) {
+                    $searchQuery->where('expertise_title', 'like', '%'.$search.'%')
                         ->orWhere('bio', 'like', '%'.$search.'%')
+                        ->orWhereHas('domains', function ($domainQuery) use ($search) {
+                            $domainQuery->where('name', 'like', '%'.$search.'%');
+                        })
                         ->orWhereHas('user', function ($userQuery) use ($search) {
                             $userQuery->where('name', 'like', '%'.$search.'%');
                         });
@@ -46,7 +70,7 @@ class WebMentorController extends Controller
             ->paginate(9)
             ->withQueryString();
 
-        return view('mentors.index', compact('mentors', 'domains'));
+        return view('mentors.index', compact('mentors', 'domains', 'locations'));
     }
 
     public function show(Mentor $mentor)
@@ -54,5 +78,26 @@ class WebMentorController extends Controller
         $mentor->load(['user', 'domains', 'sessions.review']);
 
         return view('mentors.show', compact('mentor'));
+    }
+
+    private function normalizeLocationAliases(?string $location): array
+    {
+        if (! $location) {
+            return [];
+        }
+
+        $normalized = mb_strtolower(trim($location));
+
+        $aliases = [
+            'online' => ['Online', 'En ligne'],
+            'en ligne' => ['Online', 'En ligne'],
+            'remote' => ['Remote', 'distance'],
+            'a distance' => ['Remote', 'distance'],
+            'distance' => ['Remote', 'distance'],
+            'douala' => ['Douala'],
+            'yaounde' => ['Yaounde', 'Yaound'],
+        ];
+
+        return $aliases[$normalized] ?? [$location];
     }
 }

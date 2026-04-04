@@ -1,3 +1,87 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .call-shell {
+        background:
+            radial-gradient(circle at top left, rgba(56, 189, 248, 0.24), transparent 26%),
+            radial-gradient(circle at top right, rgba(45, 212, 191, 0.18), transparent 24%),
+            linear-gradient(160deg, #020617 0%, #0f172a 45%, #1e293b 100%);
+    }
+
+    .call-backdrop {
+        background:
+            radial-gradient(circle at 20% 20%, rgba(34, 211, 238, 0.16), transparent 18%),
+            radial-gradient(circle at 80% 15%, rgba(56, 189, 248, 0.14), transparent 20%),
+            radial-gradient(circle at 50% 100%, rgba(15, 118, 110, 0.18), transparent 24%);
+    }
+
+    .call-penguin-marquee {
+        overflow: hidden;
+        mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+    }
+
+    .call-penguin-track {
+        display: flex;
+        width: max-content;
+        align-items: center;
+        gap: 1.5rem;
+        animation: penguin-marquee 18s linear infinite;
+    }
+
+    .call-penguin {
+        position: relative;
+        display: flex;
+        height: 5.5rem;
+        width: 5.5rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(15, 23, 42, 0.65);
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
+    }
+
+    .call-penguin-icon {
+        position: relative;
+        z-index: 1;
+        font-size: 2rem;
+        filter: drop-shadow(0 6px 18px rgba(15, 23, 42, 0.3));
+    }
+
+    .call-penguin-ring {
+        position: absolute;
+        inset: -0.35rem;
+        border-radius: 9999px;
+        border: 1px solid rgba(103, 232, 249, 0.2);
+        animation: penguin-pulse 2.8s ease-out infinite;
+    }
+}
+
+@keyframes penguin-marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes penguin-pulse {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.2;
+    }
+
+    70% {
+        transform: scale(1.15);
+        opacity: 0.85;
+    }
+
+    100% {
+        transform: scale(1.22);
+        opacity: 0;
+    }
+}
