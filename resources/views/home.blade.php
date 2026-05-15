@@ -28,7 +28,7 @@
                     </a>
                 @endauth
             </div>
-        </div>
+        </div>      
     </header>
 
     <section class="bg-gradient-to-r from-blue-800 via-blue-700 to-blue-500">
@@ -51,11 +51,13 @@
                 </div>
             </div>
 
-            <div class="rounded-2xl bg-white/10 p-4 backdrop-blur-sm">
+            <div class="rounded-2xl bg-white/10 p-2 backdrop-blur-sm sm:p-3 lg:p-4">
                 <img
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80"
-                    alt="Mentor"
-                    class="h-[320px] w-full rounded-2xl object-cover shadow-2xl"
+                    src="{{ asset('images/landing-mentor.png') }}"
+                    alt="Mentor et mentoré en discussion"
+                    width="1535"
+                    height="1024"
+                    class="aspect-[1535/1024] w-full rounded-xl object-cover shadow-2xl sm:rounded-2xl"
                 >
             </div>
         </div>
