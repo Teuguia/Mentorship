@@ -7,9 +7,11 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\Route;
 
-Route::apiResource('mentors', MentorController::class);
-Route::apiResource('mentees', MenteeController::class);
-Route::apiResource('domains', DomainController::class);
-Route::get('domains/{domain}/mentors', [DomainController::class, 'mentors']);
-Route::apiResource('sessions', SessionController::class);
-Route::apiResource('reviews', ReviewController::class);
+Route::name('api.')->group(function () {
+    Route::apiResource('mentors', MentorController::class);
+    Route::apiResource('mentees', MenteeController::class);
+    Route::apiResource('domains', DomainController::class);
+    Route::get('domains/{domain}/mentors', [DomainController::class, 'mentors'])->name('domains.mentors');
+    Route::apiResource('sessions', SessionController::class);
+    Route::apiResource('reviews', ReviewController::class);
+});
