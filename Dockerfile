@@ -25,6 +25,7 @@ WORKDIR /var/www/html
 RUN apk add --no-cache \
         bash \
         icu-data-full \
+        icu-libs \
         postgresql-libs \
         unzip \
         zip \

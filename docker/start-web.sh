@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
 set -eu
 
-php artisan key:generate --force --no-interaction || true
+if [ -z "${APP_KEY:-}" ]; then
+    php artisan key:generate --force --no-interaction || true
+fi
 php artisan storage:link || true
 php artisan migrate --force --no-interaction
 php artisan config:cache
