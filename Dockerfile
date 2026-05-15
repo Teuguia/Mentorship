@@ -26,11 +26,12 @@ RUN apk add --no-cache \
         bash \
         icu-data-full \
         icu-dev \
-        libpq-dev \
         oniguruma-dev \
+        postgresql-dev \
         postgresql-libs \
         unzip \
         zip \
+        $PHPIZE_DEPS \
     && docker-php-ext-install \
         bcmath \
         intl \
