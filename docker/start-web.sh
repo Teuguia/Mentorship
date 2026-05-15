@@ -4,6 +4,8 @@ set -eu
 if [ -z "${APP_KEY:-}" ]; then
     php artisan key:generate --force --no-interaction || true
 fi
+
+php artisan optimize:clear || true
 php artisan storage:link || true
 php artisan migrate --force --no-interaction
 php artisan config:cache

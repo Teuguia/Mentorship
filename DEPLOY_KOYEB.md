@@ -98,6 +98,7 @@ start-web
 Ce script:
 
 - genere la cle si besoin
+- vide les anciens caches Laravel
 - tente `storage:link`
 - lance les migrations
 - met en cache config/routes/views
@@ -143,9 +144,17 @@ Pour les variables Reverb, utilisez des valeurs longues aleatoires.
 ## 8. Verification apres deploiement
 
 - `https://<web-service>.koyeb.app/up` doit repondre correctement.
+- La page d'accueil doit charger le CSS Tailwind et afficher le footer.
 - La page de messagerie doit se charger.
 - Deux navigateurs sur la meme conversation doivent recevoir les messages sans reload.
 - Les appels audio/video doivent ouvrir la salle Jitsi.
+
+Si le front ne se met pas a jour en ligne:
+
+1. Verifiez que le service utilise bien ce `Dockerfile`.
+2. Relancez un redeploiement complet du service web.
+3. Controlez dans les logs que `npm run build` a produit `public/build/manifest.json`.
+4. Controlez que `php artisan optimize:clear` puis `php artisan view:cache` passent au demarrage.
 
 ## 9. Limites du mode gratuit
 
