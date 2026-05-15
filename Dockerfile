@@ -25,21 +25,23 @@ WORKDIR /var/www/html
 RUN apk add --no-cache \
         bash \
         icu-data-full \
-        icu-dev \
-        oniguruma-dev \
-        postgresql-dev \
         postgresql-libs \
         unzip \
         zip \
+    && apk add --no-cache --virtual .build-deps \
         $PHPIZE_DEPS \
+        icu-dev \
+        linux-headers \
+        oniguruma-dev \
+        postgresql-dev \
     && docker-php-ext-install \
         bcmath \
         intl \
         pcntl \
-        pdo \
         pdo_mysql \
         pdo_pgsql \
-        sockets
+        sockets \
+    && apk del .build-deps
 
 COPY --from=vendor /app /var/www/html
 COPY --from=frontend /app/public/build /var/www/html/public/build
