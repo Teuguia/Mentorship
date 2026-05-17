@@ -58,6 +58,12 @@ services:
         value: sync
       - key: BROADCAST_CONNECTION
         value: reverb
+      - key: ADMIN_NAME
+        value: Administrateur
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
       - key: APP_KEY
         sync: false
       - key: APP_URL

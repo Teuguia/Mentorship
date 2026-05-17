@@ -12,6 +12,14 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
+        <script>
+            window.reverbConfig = @json([
+                'key' => config('broadcasting.connections.reverb.key'),
+                'host' => config('broadcasting.connections.reverb.options.host'),
+                'port' => config('broadcasting.connections.reverb.options.port'),
+                'scheme' => config('broadcasting.connections.reverb.options.scheme'),
+            ]);
+        </script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
