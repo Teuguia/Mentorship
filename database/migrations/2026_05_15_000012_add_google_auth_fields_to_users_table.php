@@ -8,17 +8,39 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('google_id')->nullable()->unique()->after('password');
-            $table->string('google_avatar')->nullable()->after('google_id');
-        });
+        if (! Schema::hasColumn('users', 'google_id')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('google_id')->nullable()->after('password');
+            });
+        }
+
+        if (! Schema::hasIndex('users', ['google_id'], 'unique')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->unique('google_id');
+            });
+        }
+
+        if (! Schema::hasColumn('users', 'google_avatar')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('google_avatar')->nullable()->after('google_id');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropUnique(['google_id']);
-            $table->dropColumn(['google_id', 'google_avatar']);
-        });
+        if (Schema::hasIndex('users', ['google_id'], 'unique')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->dropUnique(['google_id']);
+            });
+        }
+
+        foreach (['google_avatar', 'google_id'] as $column) {
+            if (Schema::hasColumn('users', $column)) {
+                Schema::table('users', function (Blueprint $table) use ($column) {
+                    $table->dropColumn($column);
+                });
+            }
+        }
     }
 };
