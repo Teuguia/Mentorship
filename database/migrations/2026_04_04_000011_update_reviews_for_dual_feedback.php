@@ -9,26 +9,47 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('reviews', function (Blueprint $table) {
-            $table->string('reviewer_role', 20)->default('mentee')->after('mentee_id');
-        });
+        if (! Schema::hasColumn('reviews', 'reviewer_role')) {
+            Schema::table('reviews', function (Blueprint $table) {
+                $table->string('reviewer_role', 20)->default('mentee')->after('mentee_id');
+            });
+        }
 
         DB::table('reviews')->update([
             'reviewer_role' => 'mentee',
         ]);
 
-        Schema::table('reviews', function (Blueprint $table) {
-            $table->dropUnique('reviews_session_id_unique');
-            $table->unique(['session_id', 'reviewer_role']);
-        });
+        if (Schema::hasIndex('reviews', 'reviews_session_id_unique', 'unique')) {
+            Schema::table('reviews', function (Blueprint $table) {
+                $table->dropUnique('reviews_session_id_unique');
+            });
+        }
+
+        if (! Schema::hasIndex('reviews', ['session_id', 'reviewer_role'], 'unique')) {
+            Schema::table('reviews', function (Blueprint $table) {
+                $table->unique(['session_id', 'reviewer_role']);
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('reviews', function (Blueprint $table) {
-            $table->dropUnique(['session_id', 'reviewer_role']);
-            $table->unique('session_id');
-            $table->dropColumn('reviewer_role');
-        });
+        if (Schema::hasIndex('reviews', ['session_id', 'reviewer_role'], 'unique')) {
+            Schema::table('reviews', function (Blueprint $table) {
+                $table->dropUnique(['session_id', 'reviewer_role']);
+            });
+        }
+
+        if (! Schema::hasIndex('reviews', 'reviews_session_id_unique', 'unique')) {
+            Schema::table('reviews', function (Blueprint $table) {
+                $table->unique('session_id');
+            });
+        }
+
+        if (Schema::hasColumn('reviews', 'reviewer_role')) {
+            Schema::table('reviews', function (Blueprint $table) {
+                $table->dropColumn('reviewer_role');
+            });
+        }
     }
 };
