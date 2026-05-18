@@ -10,7 +10,7 @@ class MentorController extends Controller
 {
     public function index()
     {
-        $mentors = Mentor::with(['user', 'domains'])->latest()->get();
+        $mentors = Mentor::verified()->with(['user', 'domains'])->latest()->get();
 
         return response()->json($mentors);
     }
@@ -39,7 +39,7 @@ class MentorController extends Controller
             'profile_photo' => $validated['profile_photo'] ?? null,
         ]);
 
-        if (!empty($validated['domains'])) {
+        if (! empty($validated['domains'])) {
             $mentor->domains()->sync($validated['domains']);
         }
 
@@ -51,6 +51,8 @@ class MentorController extends Controller
 
     public function show(Mentor $mentor)
     {
+        abort_unless($mentor->isVerified(), 404);
+
         return response()->json($mentor->load(['user', 'domains', 'sessions.review']));
     }
 

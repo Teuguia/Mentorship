@@ -2,17 +2,19 @@
 
 namespace Database\Seeders;
 
-use App\Models\Domain;
 use App\Models\Conversation;
-use App\Models\Message;
+use App\Models\Domain;
 use App\Models\Mentee;
 use App\Models\Mentor;
+use App\Models\Message;
 use App\Models\Review;
 use App\Models\Session;
 use App\Models\User;
+use Faker\Factory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
@@ -24,7 +26,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = \Faker\Factory::create('fr_FR');
+        $faker = Factory::create('fr_FR');
+
+        if (env('ADMIN_EMAIL') && env('ADMIN_PASSWORD')) {
+            User::updateOrCreate(
+                ['email' => env('ADMIN_EMAIL')],
+                [
+                    'name' => env('ADMIN_NAME', 'Administrateur'),
+                    'password' => Hash::make(env('ADMIN_PASSWORD')),
+                    'role' => 'admin',
+                    'email_verified_at' => now(),
+                ]
+            );
+        }
 
         $domains = collect([
             ['name' => 'Business', 'description' => 'Stratégie, leadership, finance.'],
@@ -77,6 +91,8 @@ class DatabaseSeeder extends Seeder
                     'hourly_rate' => $faker->randomFloat(2, 15, 120),
                     'availability' => Arr::random(['En ligne', 'Douala', 'Yaoundé', 'À distance']),
                     'profile_photo' => $mentorPhotos[($index - 1) % count($mentorPhotos)] ?? 'https://i.pravatar.cc/300?img=10',
+                    'verification_status' => 'verified',
+                    'verified_at' => now(),
                 ]
             );
 
@@ -138,6 +154,7 @@ class DatabaseSeeder extends Seeder
                     'session_id' => $session->id,
                     'mentor_id' => $session->mentor_id,
                     'mentee_id' => $session->mentee_id,
+                    'reviewer_role' => 'mentee',
                     'rating' => $faker->numberBetween(4, 5),
                     'comment' => $testimonials[array_rand($testimonials)],
                 ]);

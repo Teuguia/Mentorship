@@ -13,6 +13,7 @@ class Review extends Model
         'session_id',
         'mentor_id',
         'mentee_id',
+        'reviewer_role',
         'rating',
         'comment',
     ];

@@ -21,6 +21,7 @@ class WebMentorController extends Controller
 
         $domains = Domain::orderBy('name')->get();
         $locations = Mentor::query()
+            ->verified()
             ->whereNotNull('availability')
             ->where('availability', '!=', '')
             ->distinct()
@@ -30,6 +31,7 @@ class WebMentorController extends Controller
         $locationAliases = $this->normalizeLocationAliases($filters['location'] ?? null);
 
         $mentors = Mentor::query()
+            ->verified()
             ->with(['user', 'domains'])
             ->when(! empty($filters['domain_id']), function ($query) use ($filters) {
                 $query->whereHas('domains', function ($domainQuery) use ($filters) {
@@ -75,6 +77,13 @@ class WebMentorController extends Controller
 
     public function show(Mentor $mentor)
     {
+        $canPreview = auth()->check() && (
+            auth()->user()->isAdmin()
+            || (auth()->user()->role === 'mentor' && auth()->user()->mentor?->id === $mentor->id)
+        );
+
+        abort_unless($mentor->isVerified() || $canPreview, 404);
+
         $mentor->load(['user', 'domains', 'sessions.review']);
 
         return view('mentors.show', compact('mentor'));

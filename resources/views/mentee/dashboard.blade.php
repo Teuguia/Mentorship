@@ -37,6 +37,18 @@
                 </p>
             </section>
 
+            @if(session('status'))
+                <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+                    {{ session('status') }}
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
             <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <div class="rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 p-5 text-white shadow-sm">
                     <div class="flex items-center gap-2 text-sm font-medium text-blue-100">
@@ -173,6 +185,52 @@
                         </a>
                     </div>
                 </div>
+            </section>
+
+            <section class="mt-6 grid gap-6 lg:grid-cols-2">
+                <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <h2 class="text-lg font-semibold text-slate-900">Creer une session de travail</h2>
+                    <form method="POST" action="{{ route('dashboard.sessions.store') }}" class="mt-5 space-y-4">
+                        @csrf
+                        <select name="contact_id" class="w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Choisir un mentor</option>
+                            @foreach($availableMentors as $mentor)
+                                <option value="{{ $mentor->id }}">{{ $mentor->user->name }}</option>
+                            @endforeach
+                        </select>
+                        <input type="text" name="title" value="{{ old('title') }}" placeholder="Titre de la session" class="w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                        <textarea name="description" rows="3" placeholder="Sujet a travailler avec votre mentor" class="w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">{{ old('description') }}</textarea>
+                        <input type="datetime-local" name="scheduled_at" value="{{ old('scheduled_at') }}" class="w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                        <button type="submit" class="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
+                            Demander une session
+                        </button>
+                    </form>
+                </section>
+
+                <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <h2 class="text-lg font-semibold text-slate-900">Laisser un avis</h2>
+                    <form method="POST" action="{{ route('dashboard.reviews.store') }}" class="mt-5 space-y-4">
+                        @csrf
+                        <select name="session_id" class="w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Choisir une session terminee</option>
+                            @foreach($reviewableSessions as $session)
+                                <option value="{{ $session->id }}">
+                                    {{ $session->title }} - {{ $session->mentor->user->name ?? 'Mentor' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <select name="rating" class="w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Note sur 5</option>
+                            @foreach(range(1, 5) as $rating)
+                                <option value="{{ $rating }}">{{ $rating }}/5</option>
+                            @endforeach
+                        </select>
+                        <textarea name="comment" rows="3" placeholder="Votre avis sur la session et le mentor" class="w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">{{ old('comment') }}</textarea>
+                        <button type="submit" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                            Enregistrer l'avis
+                        </button>
+                    </form>
+                </section>
             </section>
 
             <section class="mt-6 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">

@@ -39,4 +39,10 @@ return [
         'base_url' => env('JITSI_BASE_URL', 'https://meet.jit.si'),
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI'),
+    ],
+
 ];

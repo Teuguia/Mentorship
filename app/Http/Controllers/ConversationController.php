@@ -85,6 +85,7 @@ class ConversationController extends Controller
     {
         abort_unless(Auth::user()->role === 'mentee', 403);
         abort_unless(Auth::user()->mentee, 403, 'Profil mentee introuvable.');
+        abort_unless($mentor->isVerified(), 403, 'Ce conseiller est encore en attente de verification.');
 
         $conversation = Conversation::firstOrCreate(
             [

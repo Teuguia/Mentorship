@@ -94,6 +94,9 @@
                         <div>
                             <h3 class="text-lg font-bold text-slate-900">{{ $mentor->user->name ?? 'Mentor' }}</h3>
                             <p class="text-sm text-slate-500">{{ $mentor->expertise_title }}</p>
+                            <span class="mt-2 inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-bold text-emerald-700">
+                                Verifie
+                            </span>
                         </div>
                     </div>
 

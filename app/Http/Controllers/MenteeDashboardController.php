@@ -30,6 +30,7 @@ class MenteeDashboardController extends Controller
         $recentReviews = Review::query()
             ->with(['mentor.user', 'session'])
             ->where('mentee_id', $mentee->id)
+            ->where('reviewer_role', 'mentor')
             ->latest()
             ->take(4)
             ->get();
@@ -43,6 +44,12 @@ class MenteeDashboardController extends Controller
             ->get();
 
         $domains = $mentee->domains()->orderBy('name')->get();
+
+        $availableMentors = $sessions
+            ->filter(fn ($session) => $session->mentor && $session->mentor->user)
+            ->unique('mentor_id')
+            ->map(fn ($session) => $session->mentor)
+            ->values();
 
         $stats = [
             'upcoming_sessions' => $sessions
@@ -59,12 +66,22 @@ class MenteeDashboardController extends Controller
                 ->count(),
         ];
 
+        $reviewableSessions = Session::query()
+            ->with(['mentor.user'])
+            ->where('mentee_id', $mentee->id)
+            ->where('status', 'completed')
+            ->whereDoesntHave('reviews', fn ($query) => $query->where('reviewer_role', 'mentee'))
+            ->orderByDesc('scheduled_at')
+            ->get();
+
         return view('mentee.dashboard', compact(
             'mentee',
             'upcomingSessions',
             'recentReviews',
             'recentConversations',
             'domains',
+            'availableMentors',
+            'reviewableSessions',
             'stats'
         ));
     }

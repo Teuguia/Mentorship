@@ -1,12 +1,16 @@
 <?php
 
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin\MentorVerificationController;
 use App\Http\Controllers\ConversationController;
-use App\Http\Controllers\MessageController;
+use App\Http\Controllers\DashboardSessionController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MenteeDashboardController;
 use App\Http\Controllers\MentorDashboardController;
+use App\Http\Controllers\MentorProfileController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WebMentorController;
+use App\Http\Controllers\WebReviewController;
 use App\Http\Controllers\WebSessionController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +25,8 @@ Route::get('/become-a-mentor', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/sessions', [WebSessionController::class, 'index'])->name('sessions.index');
+    Route::post('/dashboard/sessions', [DashboardSessionController::class, 'store'])->name('dashboard.sessions.store');
+    Route::post('/dashboard/reviews', [WebReviewController::class, 'store'])->name('dashboard.reviews.store');
     Route::get('/messages', [ConversationController::class, 'index'])->name('messages.index');
     Route::get('/messages/{conversation}', [ConversationController::class, 'show'])->name('messages.show');
     Route::get('/messages/{conversation}/feed', [ConversationController::class, 'feed'])->name('messages.feed');
@@ -31,14 +37,24 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/mentor/dashboard', [MentorDashboardController::class, 'index'])
         ->name('mentor.dashboard');
+    Route::patch('/mentor/profile', [MentorProfileController::class, 'update'])
+        ->name('mentor.profile.update');
 
     Route::get('/mentee/dashboard', [MenteeDashboardController::class, 'index'])
         ->name('mentee.dashboard');
+
+    Route::get('/admin/mentor-verifications', [MentorVerificationController::class, 'index'])
+        ->name('admin.mentor-verifications.index');
+    Route::patch('/admin/mentor-verifications/{mentor}', [MentorVerificationController::class, 'update'])
+        ->name('admin.mentor-verifications.update');
+    Route::get('/admin/mentor-verifications/{mentor}/document', [MentorVerificationController::class, 'document'])
+        ->name('admin.mentor-verifications.document');
 
     Route::get('/dashboard', function () {
         $user = auth()->user();
 
         return match ($user->role) {
+            'admin' => redirect()->route('admin.mentor-verifications.index'),
             'mentor' => redirect()->route('mentor.dashboard'),
             'mentee' => redirect()->route('mentee.dashboard'),
             default => redirect()->route('home'),

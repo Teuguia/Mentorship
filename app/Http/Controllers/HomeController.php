@@ -12,6 +12,7 @@ class HomeController extends Controller
     {
         $domains = Domain::orderBy('name')->get();
         $locations = Mentor::query()
+            ->verified()
             ->whereNotNull('availability')
             ->where('availability', '!=', '')
             ->distinct()
@@ -19,12 +20,15 @@ class HomeController extends Controller
             ->pluck('availability');
 
         $testimonials = Review::query()
+            ->where('reviewer_role', 'mentee')
+            ->whereHas('mentor', fn ($query) => $query->verified())
             ->with(['mentor.user'])
             ->latest()
             ->take(4)
             ->get();
 
         $featuredMentors = Mentor::query()
+            ->verified()
             ->with(['user'])
             ->latest()
             ->take(4)

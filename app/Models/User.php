@@ -15,6 +15,9 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'google_id',
+        'google_avatar',
+        'email_verified_at',
     ];
 
     protected $hidden = [
@@ -43,5 +46,10 @@ class User extends Authenticatable
     public function messages()
     {
         return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
     }
 }

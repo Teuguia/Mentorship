@@ -12,6 +12,15 @@
                         <div>
                             <h1 class="text-3xl font-bold text-slate-900">{{ $mentor->user->name ?? 'Mentor' }}</h1>
                             <p class="mt-1 text-slate-500">{{ $mentor->expertise_title }}</p>
+                            @if($mentor->isVerified())
+                                <span class="mt-3 inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
+                                    Conseiller verifie
+                                </span>
+                            @else
+                                <span class="mt-3 inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">
+                                    Profil en attente de verification
+                                </span>
+                            @endif
                         </div>
                     </div>
 
@@ -22,13 +31,17 @@
                         </a>
 
                         @auth
-                            @if(auth()->user()->role === 'mentee')
+                            @if(auth()->user()->role === 'mentee' && $mentor->isVerified())
                                 <form method="POST" action="{{ route('messages.start.mentor', $mentor) }}">
                                     @csrf
                                     <button type="submit" class="rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700">
                                         Contacter ce mentor
                                     </button>
                                 </form>
+                            @elseif(auth()->user()->role === 'mentee')
+                                <span class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-700">
+                                    Verification en cours
+                                </span>
                             @else
                                 <a href="{{ route('sessions.index') }}"
                                    class="rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700">
@@ -86,6 +99,22 @@
                                     {{ $mentor->availability ?: 'A definir' }}
                                 </p>
                             </div>
+                            @if($mentor->linkedin_url)
+                                <div>
+                                    <p class="text-xs uppercase text-slate-400">LinkedIn</p>
+                                    <a href="{{ $mentor->linkedin_url }}" target="_blank" rel="noreferrer" class="mt-1 inline-flex font-semibold text-blue-600 hover:text-blue-700">
+                                        Voir le profil
+                                    </a>
+                                </div>
+                            @endif
+                            @if($mentor->portfolio_url)
+                                <div>
+                                    <p class="text-xs uppercase text-slate-400">Portfolio</p>
+                                    <a href="{{ $mentor->portfolio_url }}" target="_blank" rel="noreferrer" class="mt-1 inline-flex font-semibold text-blue-600 hover:text-blue-700">
+                                        Ouvrir
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </aside>
                 </div>

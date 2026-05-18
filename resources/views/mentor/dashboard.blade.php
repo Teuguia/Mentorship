@@ -36,6 +36,97 @@
                 </p>
             </section>
 
+            @if(session('status'))
+                <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+                    {{ session('status') }}
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
+            <section class="mb-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+                <div class="border-b border-slate-200 px-5 py-4">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h2 class="text-base font-semibold text-slate-900">Profil public et verification</h2>
+                            <p class="mt-1 text-sm text-slate-500">
+                                Completez votre profil et ajoutez un CV, diplome ou certificat. Votre profil devient visible apres validation admin.
+                            </p>
+                        </div>
+                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold {{ $mentor->verification_status === 'verified' ? 'bg-emerald-100 text-emerald-700' : ($mentor->verification_status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700') }}">
+                            {{ $mentor->verificationStatusLabel() }}
+                        </span>
+                    </div>
+                </div>
+
+                @if($mentor->verification_notes)
+                    <div class="border-b border-amber-200 bg-amber-50 px-5 py-3 text-sm text-amber-800">
+                        Note admin : {{ $mentor->verification_notes }}
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('mentor.profile.update') }}" enctype="multipart/form-data" class="grid gap-5 px-5 py-5 lg:grid-cols-2">
+                    @csrf
+                    @method('PATCH')
+
+                    <div>
+                        <label for="expertise_title" class="block text-sm font-semibold text-slate-700">Titre d'expertise</label>
+                        <input id="expertise_title" type="text" name="expertise_title" value="{{ old('expertise_title', $mentor->expertise_title) }}" class="mt-2 w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label for="years_experience" class="block text-sm font-semibold text-slate-700">Annees d'experience</label>
+                        <input id="years_experience" type="number" min="0" max="80" name="years_experience" value="{{ old('years_experience', $mentor->years_experience) }}" class="mt-2 w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label for="hourly_rate" class="block text-sm font-semibold text-slate-700">Tarif horaire</label>
+                        <input id="hourly_rate" type="number" min="0" step="0.01" name="hourly_rate" value="{{ old('hourly_rate', $mentor->hourly_rate) }}" class="mt-2 w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label for="availability" class="block text-sm font-semibold text-slate-700">Disponibilite / lieu</label>
+                        <input id="availability" type="text" name="availability" value="{{ old('availability', $mentor->availability) }}" class="mt-2 w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label for="linkedin_url" class="block text-sm font-semibold text-slate-700">Lien LinkedIn</label>
+                        <input id="linkedin_url" type="url" name="linkedin_url" value="{{ old('linkedin_url', $mentor->linkedin_url) }}" placeholder="https://www.linkedin.com/in/..." class="mt-2 w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label for="portfolio_url" class="block text-sm font-semibold text-slate-700">Portfolio ou site</label>
+                        <input id="portfolio_url" type="url" name="portfolio_url" value="{{ old('portfolio_url', $mentor->portfolio_url) }}" placeholder="https://..." class="mt-2 w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <label for="bio" class="block text-sm font-semibold text-slate-700">Bio professionnelle</label>
+                        <textarea id="bio" name="bio" rows="4" class="mt-2 w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">{{ old('bio', $mentor->bio) }}</textarea>
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <label for="verification_document" class="block text-sm font-semibold text-slate-700">Justificatif</label>
+                        <input id="verification_document" type="file" name="verification_document" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="mt-2 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700">
+                        <p class="mt-2 text-xs text-slate-500">
+                            Formats acceptes : PDF, image, DOC ou DOCX. Taille maximale : 5 Mo.
+                            @if($mentor->verification_document_name)
+                                Fichier actuel : {{ $mentor->verification_document_name }}.
+                            @endif
+                        </p>
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <button type="submit" class="rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800">
+                            Enregistrer et soumettre a verification
+                        </button>
+                    </div>
+                </form>
+            </section>
+
             <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <div class="rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 p-5 text-white shadow-sm">
                     <div class="flex items-center gap-2 text-sm font-medium text-blue-100">
@@ -164,6 +255,52 @@
                         </a>
                     </div>
                 </div>
+            </section>
+
+            <section class="mt-6 grid gap-6 lg:grid-cols-2">
+                <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <h2 class="text-lg font-semibold text-slate-900">Creer une session de travail</h2>
+                    <form method="POST" action="{{ route('dashboard.sessions.store') }}" class="mt-5 space-y-4">
+                        @csrf
+                        <select name="contact_id" class="w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Choisir un mentore</option>
+                            @foreach($availableMentees as $mentee)
+                                <option value="{{ $mentee->id }}">{{ $mentee->user->name }}</option>
+                            @endforeach
+                        </select>
+                        <input type="text" name="title" value="{{ old('title') }}" placeholder="Titre de la session" class="w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                        <textarea name="description" rows="3" placeholder="Objectif de travail" class="w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">{{ old('description') }}</textarea>
+                        <input type="datetime-local" name="scheduled_at" value="{{ old('scheduled_at') }}" class="w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                        <button type="submit" class="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
+                            Planifier la session
+                        </button>
+                    </form>
+                </section>
+
+                <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <h2 class="text-lg font-semibold text-slate-900">Laisser un avis</h2>
+                    <form method="POST" action="{{ route('dashboard.reviews.store') }}" class="mt-5 space-y-4">
+                        @csrf
+                        <select name="session_id" class="w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Choisir une session terminee</option>
+                            @foreach($reviewableSessions as $session)
+                                <option value="{{ $session->id }}">
+                                    {{ $session->title }} - {{ $session->mentee->user->name ?? 'Mentore' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <select name="rating" class="w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Note sur 5</option>
+                            @foreach(range(1, 5) as $rating)
+                                <option value="{{ $rating }}">{{ $rating }}/5</option>
+                            @endforeach
+                        </select>
+                        <textarea name="comment" rows="3" placeholder="Votre avis sur la progression du mentore" class="w-full rounded-xl border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500">{{ old('comment') }}</textarea>
+                        <button type="submit" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                            Enregistrer l'avis
+                        </button>
+                    </form>
+                </section>
             </section>
 
             <section id="mentees" class="mt-6">

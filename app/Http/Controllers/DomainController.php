@@ -32,7 +32,10 @@ class DomainController extends Controller
 
     public function show(Domain $domain)
     {
-        return response()->json($domain->load(['mentors.user', 'mentees.user']));
+        return response()->json($domain->load([
+            'mentors' => fn ($query) => $query->verified()->with('user'),
+            'mentees.user',
+        ]));
     }
 
     public function update(Request $request, Domain $domain)
@@ -61,7 +64,7 @@ class DomainController extends Controller
 
     public function mentors(Domain $domain)
     {
-        $mentors = $domain->mentors()->with(['user', 'domains'])->get();
+        $mentors = $domain->mentors()->verified()->with(['user', 'domains'])->get();
 
         return response()->json($mentors);
     }

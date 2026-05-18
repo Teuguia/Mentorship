@@ -50,7 +50,9 @@ COPY docker/start-web.sh /usr/local/bin/start-web
 COPY docker/start-reverb.sh /usr/local/bin/start-reverb
 
 RUN chmod +x /usr/local/bin/start-web /usr/local/bin/start-reverb \
-    && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache
+    && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache \
+    && test -f public/build/manifest.json \
+    && test -d public/build/assets
 
 EXPOSE 8000 8080
 
